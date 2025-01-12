@@ -162,7 +162,7 @@ def train_cl(model, train_datasets, iters=2000, batch_size=32, baseline='none',
             if baseline=="cummulative" and per_context:
                 x = y = scores = None
             else:
-                print(data_loader)
+                #print(data_loader)
                 x, y = next(data_loader)                             #--> sample training data of current context
                 y = y-model.classes_per_context*(context-1) if per_context and not per_context_singlehead else y
                 # --> adjust the y-targets to the 'active range'

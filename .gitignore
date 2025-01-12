@@ -10,3 +10,4 @@ store/datasets
 store/results
 
 venv
+data/MNIST

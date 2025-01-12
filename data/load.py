@@ -89,7 +89,7 @@ def get_context_set(name, scenario, contexts, data_dir="./datasets", only_config
     if contexts > config['classes'] and not name=="permMNIST":
         raise ValueError("Experiment '{}' cannot have more than {} contexts!".format(name, config['classes']))
     # -how many classes per context?
-    classes_per_context = 10 if name=="permMNIST" else int(np.floor(config['classes'] / contexts))
+    classes_per_context = 10 if name=="permMNIST" or name=="RotatedMNIST" else int(np.floor(config['classes'] / contexts))
     config['classes_per_context'] = classes_per_context
     config['output_units'] = classes_per_context if (scenario=='domain' or
                                                     (scenario=="task" and singlehead)) else classes_per_context*contexts
@@ -164,4 +164,5 @@ def get_context_set(name, scenario, contexts, data_dir="./datasets", only_config
             test_datasets.append(SubDataset(testset, labels, target_transform=target_transform))
 
     # Return tuple of train- and test-dataset, config-dictionary and number of classes per context
+    print(config)
     return ((train_datasets, test_datasets), config)

@@ -239,14 +239,10 @@ class Classifier(ContinualLearner, MemoryBuffer):
 
             # Run model
             y_hat = self(x)
-            #print(x.shape)
-            #print(y_hat.shape)
-            y_hat = y_hat.squeeze()
-            y = y.type(torch.FloatTensor)
-            #print(y.shape)
+            #y_hat = y_hat.squeeze()
+            #y = y.type(torch.FloatTensor)
             # -if needed, remove predictions for classes not active in the current context
             if active_classes is not None:
-                #print('active classes')
                 class_entries = active_classes[-1] if type(active_classes[0])==list else active_classes
                 y_hat = y_hat[:, class_entries]
 
@@ -262,15 +258,16 @@ class Classifier(ContinualLearner, MemoryBuffer):
                 ).sum(dim=1).mean()     #--> sum over classes, then average over batch
             else:
                 # -multiclass prediction loss
-                #print(y_hat.shape)
+                if y is not None:
+                    y = y.to(y_hat.device)    
                 predL = None if y is None else F.cross_entropy(input=y_hat, target=y, reduction='mean')
 
             # Weigh losses
             loss_cur = predL
 
             # Calculate training-accuracy
-            #accuracy = None if y is None else (y == y_hat.max(1)[1]).sum().item() / x.size(0)
-            accuracy = None if y is None else (y == y_hat.max(0)[1]).sum().item() / x.size(0)
+            accuracy = None if y is None else (y == y_hat.max(1)[1]).sum().item() / x.size(0)
+            #accuracy = None if y is None else (y == y_hat.max(0)[1]).sum().item() / x.size(0)
         else:
             accuracy = predL = None
             # -> it's possible there is only "replay" [i.e., for offline with incremental context learning]
