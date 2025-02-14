@@ -86,10 +86,10 @@ def get_context_set(name, scenario, contexts, data_dir="./datasets", only_config
     if config['normalize']:
         config['denormalize'] = AVAILABLE_TRANSFORMS["CIFAR100_denorm"]
     # check for number of contexts
-    if contexts > config['classes'] and not name=="permMNIST":
+    if contexts > config['classes'] and not (name=="permMNIST" or name=="RotatedMNIST") :
         raise ValueError("Experiment '{}' cannot have more than {} contexts!".format(name, config['classes']))
     # -how many classes per context?
-    classes_per_context = 10 if name=="permMNIST" or name=="RotatedMNIST" else int(np.floor(config['classes'] / contexts))
+    classes_per_context = 10 if (name=="permMNIST" or name=="RotatedMNIST") else int(np.floor(config['classes'] / contexts))
     config['classes_per_context'] = classes_per_context
     config['output_units'] = classes_per_context if (scenario=='domain' or
                                                     (scenario=="task" and singlehead)) else classes_per_context*contexts
@@ -122,16 +122,12 @@ def get_context_set(name, scenario, contexts, data_dir="./datasets", only_config
                 testset, transform=transforms.Lambda(lambda x, p=perm: permutate_image_pixels(x, p)),
                 target_transform=target_transform
             ))
-
+            
     if name=="RotatedMNIST":
         import data.rotated_mnist
-        num_tasks = 8
+        num_tasks = contexts
         train_datasets, test_datasets = data.rotated_mnist.tasks_rotMNIST_datasets(
             num_tasks=num_tasks, per_task_rotation=45)
-
-        #print(next(train_datasets[0]))
-        #print(type(train_datasets[0]))
-        #return (([], []), config)
     else:
         # prepare permutation to shuffle label-ids (to create different class batches for each random seed)
         classes = config['classes']

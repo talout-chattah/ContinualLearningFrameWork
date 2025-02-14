@@ -474,7 +474,7 @@ def run(args, verbose=False):
     file_name = "{}/acc-{}{}.txt".format(args.r_dir, param_stamp,
                                          "--S{}".format(args.eval_s) if checkattr(args, 'gen_classifier') else "")
     output_file = open(file_name, 'w')
-    output_file.write('{}\n'.format(average_accs))
+    output_file.write('{}\n'.format(accs))
     output_file.close()
     # -if requested, also save the results-dict (with accuracy after each task)
     if checkattr(args, 'results_dict'):
